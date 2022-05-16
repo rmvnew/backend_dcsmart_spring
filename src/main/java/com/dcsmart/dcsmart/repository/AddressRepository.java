@@ -1,9 +1,12 @@
 package com.dcsmart.dcsmart.repository;
 
-import com.dcsmart.dcsmart.model.Client;
+import com.dcsmart.dcsmart.model.Address;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface ClientRepository extends JpaRepository<Client,Long> {
+public interface AddressRepository extends JpaRepository<Address,Long> {
+
+
+
 }

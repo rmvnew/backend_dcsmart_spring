@@ -1,13 +1,13 @@
 package com.dcsmart.dcsmart.controller.dto;
 
-import com.dcsmart.dcsmart.model.Client;
+import com.dcsmart.dcsmart.model.Person;
 
 public class PhoneRequest {
 
     private Long id;
 
-    private String number;
+    private String phone_number;
 
-    private Client client;
+    private Person person;
 
 }

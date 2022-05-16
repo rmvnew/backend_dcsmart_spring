@@ -1,7 +1,7 @@
 package com.dcsmart.dcsmart.service.impl;
 
 import com.dcsmart.dcsmart.model.Phone;
-import com.dcsmart.dcsmart.repository.ClientRepository;
+import com.dcsmart.dcsmart.repository.PersonRepository;
 import com.dcsmart.dcsmart.repository.PhoneRepository;
 import com.dcsmart.dcsmart.service.PhoneService;
 
@@ -9,11 +9,11 @@ import java.util.List;
 
 public class PhoneServiceImpl implements PhoneService {
 
-    private final ClientRepository clientRepository;
+    private final PersonRepository personRepository;
     private final PhoneRepository phoneRepository;
 
-    public PhoneServiceImpl(ClientRepository clientRepository, PhoneRepository phoneRepository) {
-        this.clientRepository = clientRepository;
+    public PhoneServiceImpl(PersonRepository personRepository, PhoneRepository phoneRepository) {
+        this.personRepository = personRepository;
         this.phoneRepository = phoneRepository;
     }
 

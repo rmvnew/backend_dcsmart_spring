@@ -15,8 +15,8 @@ public class PhoneResponse {
     public static PhoneResponse converter(Phone phone){
 
         PhoneResponse currentPhone = new PhoneResponse();
-        currentPhone.setId(phone.getId());
-        currentPhone.setNumber(phone.getNumber());
+        currentPhone.setId(phone.getPhone_id());
+        currentPhone.setNumber(phone.getPhone_number());
 
         return currentPhone;
     }
