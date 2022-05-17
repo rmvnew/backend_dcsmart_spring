@@ -20,7 +20,7 @@ public class AddressResponse {
 
     public static AddressResponse converter(Address address){
         var currentAddress = new AddressResponse();
-        currentAddress.setAddress_id(address.getAddress_id());
+        currentAddress.setAddress_id(address.getAddressId());
         currentAddress.setStreet(address.getStreet());
         currentAddress.setDistrict(address.getDistrict());
         currentAddress.setCity(address.getCity());

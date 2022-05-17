@@ -1,26 +1,27 @@
 package com.dcsmart.dcsmart.model;
 
+
 import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
-@AllArgsConstructor
-@NoArgsConstructor
 @Getter
 @Setter
-@Entity(name = "phone")
-public class Phone {
+@AllArgsConstructor
+@NoArgsConstructor
+@Entity(name = "tb_user")
+public class User {
 
     @Id
-    @Column(name = "phone_id",nullable = false)
+    @Column(name = "user_id", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long phoneId;
+    private Long userId;
 
-    @Column(name = "phone_number")
-    private String phone_number;
+    @Column(name = "password")
+    private String password;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "person_id",referencedColumnName = "person_id")
     private Person person;
 

@@ -32,7 +32,7 @@ public class PersonResponse {
 
     public static PersonResponse converter(Person person){
         var currentClient = new PersonResponse();
-        currentClient.setId(person.getPerson_id());
+        currentClient.setId(person.getPersonId());
         currentClient.setRegister(person.getRegister());
         currentClient.setName(person.getName());
         currentClient.setEmail(person.getEmail());

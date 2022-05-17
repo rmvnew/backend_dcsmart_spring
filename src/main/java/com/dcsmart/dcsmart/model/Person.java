@@ -1,8 +1,10 @@
 package com.dcsmart.dcsmart.model;
 
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -17,26 +19,33 @@ public class Person {
     @Id
     @Column(name = "person_id",nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long person_id;
+    private Long personId;
 
+    @Column(name = "name")
     private String name;
 
+    @Column(name = "register")
     private String register;
 
+    @Column(name = "email")
     private String email;
 
-//    @JsonIgnore
     @OneToMany(mappedBy = "person",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     private Set<Phone> phones;
 
-
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "address_id",referencedColumnName = "address_id")
-
     private Address address;
+
+    @OneToOne(mappedBy = "person")
+    private User user;
+
     @Column(name = "create_at")
     private LocalDateTime createAt;
+
     @Column(name = "update_at")
     private LocalDateTime updateAt;
+
+    @Column(name = "is_active")
     private Boolean isActive;
 }
