@@ -25,6 +25,10 @@ public class User {
     @JoinColumn(name = "person_id",referencedColumnName = "person_id")
     private Person person;
 
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "profile_id", referencedColumnName = "profile_id")
+    Profile profile;
+
     @Column(name = "create_at")
     private LocalDateTime createAt;
 

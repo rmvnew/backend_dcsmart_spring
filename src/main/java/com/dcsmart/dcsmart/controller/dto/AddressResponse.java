@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 public class AddressResponse {
 
-    private Long address_id;
+    private Long addressId;
     private String street;
     private String district;
     private String city;
@@ -20,7 +20,7 @@ public class AddressResponse {
 
     public static AddressResponse converter(Address address){
         var currentAddress = new AddressResponse();
-        currentAddress.setAddress_id(address.getAddressId());
+        currentAddress.setAddressId(address.getAddressId());
         currentAddress.setStreet(address.getStreet());
         currentAddress.setDistrict(address.getDistrict());
         currentAddress.setCity(address.getCity());

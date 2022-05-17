@@ -8,14 +8,14 @@ import lombok.Setter;
 @Setter
 public class PhoneResponse {
 
-    private Long id;
+    private Long phoneId;
 
     private String number;
 
     public static PhoneResponse converter(Phone phone){
 
         PhoneResponse currentPhone = new PhoneResponse();
-        currentPhone.setId(phone.getPhoneId());
+        currentPhone.setPhoneId(phone.getPhoneId());
         currentPhone.setNumber(phone.getPhone_number());
 
         return currentPhone;
