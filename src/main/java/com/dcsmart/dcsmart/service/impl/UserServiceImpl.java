@@ -1,19 +1,18 @@
 package com.dcsmart.dcsmart.service.impl;
 
 import com.dcsmart.dcsmart.controller.dto.UserRequest;
+import com.dcsmart.dcsmart.controller.dto.UserResponse;
 import com.dcsmart.dcsmart.model.Address;
 import com.dcsmart.dcsmart.model.Person;
 import com.dcsmart.dcsmart.model.Phone;
 import com.dcsmart.dcsmart.model.User;
-import com.dcsmart.dcsmart.repository.AddressRepository;
-import com.dcsmart.dcsmart.repository.PersonRepository;
-import com.dcsmart.dcsmart.repository.PhoneRepository;
-import com.dcsmart.dcsmart.repository.UserRepository;
+import com.dcsmart.dcsmart.repository.*;
 import com.dcsmart.dcsmart.service.UserService;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -23,16 +22,18 @@ public class UserServiceImpl implements UserService {
     private final PhoneRepository phoneRepository;
     private final AddressRepository addressRepository;
     private final UserRepository userRepository;
+    private final ProfileRepository profileRepository;
 
     public UserServiceImpl(
             PersonRepository personRepository,
             PhoneRepository phoneRepository,
             AddressRepository addressRepository,
-            UserRepository userRepository) {
+            UserRepository userRepository, ProfileRepository profileRepository) {
         this.personRepository = personRepository;
         this.phoneRepository = phoneRepository;
         this.addressRepository = addressRepository;
         this.userRepository = userRepository;
+        this.profileRepository = profileRepository;
     }
 
     @Override
@@ -74,6 +75,7 @@ public class UserServiceImpl implements UserService {
         var currentUser = new User();
         currentUser.setPassword(user.getPassword());
         currentUser.setPerson(personSaved);
+        currentUser.setProfile(this.profileRepository.getById(user.getProfile_id()));
         currentUser.setIsActive(true);
         currentUser.setCreateAt(LocalDateTime.now());
         currentUser.setUpdateAt(LocalDateTime.now());
@@ -83,8 +85,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<User> findAll() {
-        return null;
+    public List<UserResponse> findAll() {
+
+       var user = this.userRepository.findAll();
+       return user.stream().map(UserResponse::converter).collect(Collectors.toList());
     }
 
     @Override

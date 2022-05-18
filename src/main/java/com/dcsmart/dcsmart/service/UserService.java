@@ -2,6 +2,7 @@ package com.dcsmart.dcsmart.service;
 
 import com.dcsmart.dcsmart.controller.dto.AddressRequest;
 import com.dcsmart.dcsmart.controller.dto.UserRequest;
+import com.dcsmart.dcsmart.controller.dto.UserResponse;
 import com.dcsmart.dcsmart.model.Address;
 import com.dcsmart.dcsmart.model.User;
 
@@ -11,7 +12,7 @@ public interface UserService {
 
     void save(UserRequest user);
 
-    List<User> findAll();
+    List<UserResponse> findAll();
 
     User findById(Long id);
 
