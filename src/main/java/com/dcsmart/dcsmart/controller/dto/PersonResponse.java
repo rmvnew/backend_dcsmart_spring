@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 @Setter
 public class PersonResponse {
 
-    private Long id;
+    private Long personId;
 
     private String name;
 
@@ -32,7 +32,7 @@ public class PersonResponse {
 
     public static PersonResponse converter(Person person){
         var currentClient = new PersonResponse();
-        currentClient.setId(person.getPerson_id());
+        currentClient.setPersonId(person.getPersonId());
         currentClient.setRegister(person.getRegister());
         currentClient.setName(person.getName());
         currentClient.setEmail(person.getEmail());

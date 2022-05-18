@@ -7,6 +7,7 @@ import com.dcsmart.dcsmart.model.Address;
 import java.util.List;
 
 public interface AddressService {
+
     void save(Address addressRequest);
 
     List<Address> findAll();
