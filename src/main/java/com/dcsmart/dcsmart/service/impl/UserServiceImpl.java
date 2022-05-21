@@ -92,17 +92,17 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User findById(Long id) {
+    public UserResponse findById(Long id) {
+        return UserResponse.converter(this.userRepository.getById(id));
+    }
+
+    @Override
+    public UserResponse findByName(String name) {
         return null;
     }
 
     @Override
-    public User findByName(String name) {
-        return null;
-    }
-
-    @Override
-    public User update(Long id, UserRequest userRequest) {
+    public UserResponse update(Long id, UserRequest userRequest) {
         return null;
     }
 
