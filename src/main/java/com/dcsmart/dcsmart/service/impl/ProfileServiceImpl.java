@@ -1,7 +1,7 @@
 package com.dcsmart.dcsmart.service.impl;
 
-import com.dcsmart.dcsmart.controller.dto.ProfileRequest;
-import com.dcsmart.dcsmart.controller.dto.ProfileResponse;
+import com.dcsmart.dcsmart.controller.dto.request.ProfileRequest;
+import com.dcsmart.dcsmart.controller.dto.response.ProfileResponse;
 import com.dcsmart.dcsmart.model.Profile;
 import com.dcsmart.dcsmart.repository.ProfileRepository;
 import com.dcsmart.dcsmart.service.ProfileService;

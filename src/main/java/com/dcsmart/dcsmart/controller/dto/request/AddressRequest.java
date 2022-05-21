@@ -1,4 +1,4 @@
-package com.dcsmart.dcsmart.controller.dto;
+package com.dcsmart.dcsmart.controller.dto.request;
 
 import com.dcsmart.dcsmart.model.Person;
 import lombok.Getter;

@@ -1,8 +1,8 @@
 package com.dcsmart.dcsmart.controller;
 
 
-import com.dcsmart.dcsmart.controller.dto.ProfileRequest;
-import com.dcsmart.dcsmart.controller.dto.ProfileResponse;
+import com.dcsmart.dcsmart.controller.dto.request.ProfileRequest;
+import com.dcsmart.dcsmart.controller.dto.response.ProfileResponse;
 import com.dcsmart.dcsmart.service.ProfileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
