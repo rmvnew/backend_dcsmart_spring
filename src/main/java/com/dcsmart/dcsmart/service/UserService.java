@@ -1,9 +1,7 @@
 package com.dcsmart.dcsmart.service;
 
-import com.dcsmart.dcsmart.controller.dto.AddressRequest;
-import com.dcsmart.dcsmart.controller.dto.UserRequest;
-import com.dcsmart.dcsmart.controller.dto.UserResponse;
-import com.dcsmart.dcsmart.model.Address;
+import com.dcsmart.dcsmart.controller.dto.request.UserRequest;
+import com.dcsmart.dcsmart.controller.dto.response.UserResponse;
 import com.dcsmart.dcsmart.model.User;
 
 import java.util.List;

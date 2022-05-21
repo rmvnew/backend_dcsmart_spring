@@ -1,4 +1,4 @@
-package com.dcsmart.dcsmart.controller.dto;
+package com.dcsmart.dcsmart.controller.dto.response;
 
 import com.dcsmart.dcsmart.model.Phone;
 import lombok.Getter;

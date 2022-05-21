@@ -1,6 +1,6 @@
 package com.dcsmart.dcsmart.service.impl;
 
-import com.dcsmart.dcsmart.controller.dto.AddressRequest;
+import com.dcsmart.dcsmart.controller.dto.request.AddressRequest;
 import com.dcsmart.dcsmart.model.Address;
 import com.dcsmart.dcsmart.service.AddressService;
 import org.springframework.stereotype.Service;
