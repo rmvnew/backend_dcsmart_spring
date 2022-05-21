@@ -1,7 +1,7 @@
 package com.dcsmart.dcsmart.controller;
 
-import com.dcsmart.dcsmart.controller.dto.UserRequest;
-import com.dcsmart.dcsmart.controller.dto.UserResponse;
+import com.dcsmart.dcsmart.controller.dto.request.UserRequest;
+import com.dcsmart.dcsmart.controller.dto.response.UserResponse;
 import com.dcsmart.dcsmart.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
