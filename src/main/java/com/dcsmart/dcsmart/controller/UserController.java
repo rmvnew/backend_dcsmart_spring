@@ -16,13 +16,33 @@ public class UserController {
     private UserService userService;
 
     @PostMapping("/save")
-    public void save(@RequestBody UserRequest user){
+    public void save(@RequestBody UserRequest user) {
         this.userService.save(user);
     }
-    
-    @GetMapping("/")
-    public List<UserResponse> findAll(){
+
+    @GetMapping("/all")
+    public List<UserResponse> findAll() {
         return this.userService.findAll();
+    }
+
+    @GetMapping("/{id}")
+    public UserResponse findById(@PathVariable Long id) {
+        return this.userService.findById(id);
+    }
+
+    @GetMapping("/nameFilter")
+    public UserResponse findByName(@RequestParam String name){
+        return this.userService.findByName(name);
+    }
+
+    @PutMapping("/{id}/edit")
+    public UserResponse update(@PathVariable Long id, @RequestBody UserRequest user){
+        return this.userService.update(id,user);
+    }
+
+    @PatchMapping("/{id}")
+    public void delete(@PathVariable Long id){
+        this.userService.delete(id);
     }
 
 }

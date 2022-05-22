@@ -9,6 +9,7 @@ import lombok.Setter;
 public class AddressResponse {
 
     private Long addressId;
+    private String zipCode;
     private String street;
     private String district;
     private String city;
@@ -20,6 +21,7 @@ public class AddressResponse {
     public static AddressResponse converter(Address address){
         var currentAddress = new AddressResponse();
         currentAddress.setAddressId(address.getAddressId());
+        currentAddress.setZipCode(address.getZipCode());
         currentAddress.setStreet(address.getStreet());
         currentAddress.setDistrict(address.getDistrict());
         currentAddress.setCity(address.getCity());
