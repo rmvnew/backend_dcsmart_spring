@@ -2,6 +2,7 @@ package com.dcsmart.dcsmart.service.impl;
 
 import com.dcsmart.dcsmart.controller.dto.request.UserRequest;
 import com.dcsmart.dcsmart.controller.dto.response.UserResponse;
+import com.dcsmart.dcsmart.exception.*;
 import com.dcsmart.dcsmart.model.Address;
 import com.dcsmart.dcsmart.model.Person;
 import com.dcsmart.dcsmart.model.Phone;
@@ -11,6 +12,7 @@ import com.dcsmart.dcsmart.service.UserService;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -40,6 +42,7 @@ public class UserServiceImpl implements UserService {
     public void save(UserRequest user) {
 
         var currentAddress = new Address();
+        currentAddress.setZipCode(user.getZip_code());
         currentAddress.setStreet(user.getStreet());
         currentAddress.setDistrict(user.getDistrict());
         currentAddress.setCity(user.getCity());
@@ -87,27 +90,113 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<UserResponse> findAll() {
 
-       var user = this.userRepository.findAll();
-       return user.stream().map(UserResponse::converter).collect(Collectors.toList());
+        var user = this.userRepository.findAllActives();
+        return user.stream().map(UserResponse::converter).collect(Collectors.toList());
     }
 
     @Override
     public UserResponse findById(Long id) {
-        return UserResponse.converter(this.userRepository.getById(id));
+        return UserResponse.converter(this.userRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException(
+                        String.format("User com id %d não existe",id)
+                )));
     }
 
     @Override
     public UserResponse findByName(String name) {
-        return null;
+
+        User user = this.userRepository.findByName(name)
+                .orElseThrow(() -> new UserNotFoundException(
+                        String.format("User com name %s não existe",name)
+                ));
+
+
+        return UserResponse.converter(user);
     }
 
     @Override
-    public UserResponse update(Long id, UserRequest userRequest) {
-        return null;
+    public UserResponse update(Long id, UserRequest user) {
+
+        User userRegistered = this.userRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException(
+                        String.format("User com id %d não existe",id)
+                ));
+
+        Person personRegistered = this.personRepository.findById(userRegistered.getPerson().getPersonId())
+                .orElseThrow(() -> new PersonNotFoundException(
+                        String.format("Person com id %d não existe",userRegistered.getPerson().getPersonId())
+                ));
+
+        Address addressRegistered = this.addressRepository.findById(personRegistered.getAddress().getAddressId())
+                .orElseThrow(() -> new AddressNotFoundException(
+                        String.format("Address com id %d não existe",personRegistered.getAddress().getAddressId())
+                ));
+
+        Phone phoneRegistered = this.phoneRepository.findByPerson(personRegistered.getPersonId())
+                .orElseThrow(() -> new PhoneNotFoundException(
+                        String.format("Phone com id %d não existe",personRegistered.getPersonId())
+                ));
+
+
+        addressRegistered.setZipCode(user.getZip_code());
+        addressRegistered.setStreet(user.getStreet());
+        addressRegistered.setDistrict(user.getDistrict());
+        addressRegistered.setCity(user.getCity());
+        addressRegistered.setState(user.getState());
+        addressRegistered.setCountry(user.getCountry());
+        addressRegistered.setAddress_number(user.getAddress_number());
+        addressRegistered.setIsActive(true);
+        addressRegistered.setUpdateAt(LocalDateTime.now());
+
+        Address addressSaved = this.addressRepository.save(addressRegistered);
+
+
+        personRegistered.setName(user.getName());
+        personRegistered.setRegister(user.getRegister());
+        personRegistered.setEmail(user.getEmail());
+        personRegistered.setIsActive(true);
+        personRegistered.setAddress(addressSaved);
+        personRegistered.setUpdateAt(LocalDateTime.now());
+
+        Person personSaved = this.personRepository.save(personRegistered);
+
+
+        phoneRegistered.setPhone_number(user.getPhone_number());
+        phoneRegistered.setIsActive(true);
+        phoneRegistered.setPerson(personSaved);
+        phoneRegistered.setUpdateAt(LocalDateTime.now());
+        this.phoneRepository.save(phoneRegistered);
+
+
+
+        userRegistered.setPassword(user.getPassword());
+        userRegistered.setPerson(personSaved);
+        userRegistered.setProfile(this.profileRepository.getById(user.getProfile_id()));
+        userRegistered.setIsActive(true);
+        userRegistered.setUpdateAt(LocalDateTime.now());
+
+        this.userRepository.save(userRegistered);
+
+        return this.findById(id);
     }
 
     @Override
     public void delete(Long id) {
+
+        User userSaved = this.userRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException(
+                        String.format("User com id %d não existe",id)
+                ));
+
+
+        if(userSaved.getIsActive()){
+            userSaved.setIsActive(false);
+        }else{
+            throw new ItemInactiveException(String.format("%s is already inactive",userSaved.getPerson().getName()));
+        }
+        userSaved.setUpdateAt(LocalDateTime.now(ZoneOffset.UTC));
+
+        this.userRepository.save(userSaved);
 
     }
 }

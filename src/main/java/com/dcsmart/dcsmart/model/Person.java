@@ -21,7 +21,7 @@ public class Person {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long personId;
 
-    @Column(name = "name")
+    @Column(name = "person_name")
     private String name;
 
     @Column(name = "register")
