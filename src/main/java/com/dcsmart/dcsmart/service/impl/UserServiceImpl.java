@@ -127,6 +127,12 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponse update(Long id, UserRequest user) {
 
+        boolean isActive = this.userRepository.findInactive(id).isEmpty();
+
+        if(!isActive){
+            throw new UserNotFoundException(String.format("Usuário com id $d não encontrado",id));
+        }
+
         User userRegistered = this.userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException(
                         ErrorsMsg.USER_E.getCode()
