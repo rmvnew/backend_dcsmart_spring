@@ -12,11 +12,9 @@ public interface ProfileService {
 
     List<ProfileResponse> findAll();
 
-    Profile findById(Long id);
+    ProfileResponse findById(Long id);
 
-    Profile findByName(String name);
-
-    Profile update(Long id, ProfileRequest profileRequest);
+    ProfileResponse update(Long id, ProfileRequest profileRequest);
 
     void delete(Long id);
 
