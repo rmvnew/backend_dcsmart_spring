@@ -2,6 +2,7 @@ package com.dcsmart.dcsmart.service.impl;
 
 import com.dcsmart.dcsmart.controller.dto.request.UserRequest;
 import com.dcsmart.dcsmart.controller.dto.response.UserResponse;
+import com.dcsmart.dcsmart.enums.ErrorsMsg;
 import com.dcsmart.dcsmart.exception.*;
 import com.dcsmart.dcsmart.model.Address;
 import com.dcsmart.dcsmart.model.Person;
@@ -40,6 +41,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void save(UserRequest user) {
+
+        var userRegistered = this.userRepository.findByName(user.getName())
+                .isPresent();
+
+        if(userRegistered){
+            throw new UserIsRegisteredException(String.format("Usuário com nome %s já está cadastrado",user.getName()));
+        }
 
         var currentAddress = new Address();
         currentAddress.setZipCode(user.getZip_code());
@@ -98,7 +106,9 @@ public class UserServiceImpl implements UserService {
     public UserResponse findById(Long id) {
         return UserResponse.converter(this.userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException(
-                        String.format("User com id %d não existe",id)
+//                        String.format("User com id %d não existe",id)
+                        ErrorsMsg.USER_NF.getCode()
+                                +" - "+ ErrorsMsg.USER_NF.getMessage()
                 )));
     }
 
@@ -119,7 +129,8 @@ public class UserServiceImpl implements UserService {
 
         User userRegistered = this.userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException(
-                        String.format("User com id %d não existe",id)
+                        ErrorsMsg.USER_E.getCode()
+                                +" - "+ ErrorsMsg.USER_E.getMessage()
                 ));
 
         Person personRegistered = this.personRepository.findById(userRegistered.getPerson().getPersonId())
