@@ -14,7 +14,7 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
     @Query(value = "SELECT * FROM category WHERE is_active = true",nativeQuery = true)
     List<Category> findAll();
 
-    @Query(value = "SELECT * FROM category WHERE category_name like %:name% ",nativeQuery = true)
+    @Query(value = "SELECT * FROM category WHERE category_name like %:name% and is_active = true",nativeQuery = true)
     Optional<Category> findByName(String name);
 
 }

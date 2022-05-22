@@ -13,7 +13,7 @@ public interface UserRepository extends JpaRepository<User,Long> {
 
     @Query(value = "SELECT * FROM tb_user AS U INNER JOIN person AS P ON U.person_id =" +
             " P.person_id INNER JOIN tb_profile AS PP ON U.profile_id = PP.profile_id " +
-            "WHERE P.person_name = :name",nativeQuery = true)
+            "WHERE P.person_name like %:name% and U.is_active = true",nativeQuery = true)
     Optional<User> findByName(String name);
 
     Optional<User> findById(Long id);

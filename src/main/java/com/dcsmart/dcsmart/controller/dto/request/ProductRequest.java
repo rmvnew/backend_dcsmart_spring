@@ -19,4 +19,6 @@ public class ProductRequest {
 
     private Double discount;
 
+    private Long category_id;
+
 }
