@@ -7,6 +7,8 @@ import lombok.Setter;
 @Setter
 public class AddressRequest {
 
+    private String zipCode;
+
     private String street;
 
     private String district;

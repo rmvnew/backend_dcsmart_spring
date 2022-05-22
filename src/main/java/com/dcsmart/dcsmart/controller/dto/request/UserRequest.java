@@ -20,6 +20,8 @@ public class UserRequest {
 
     private String phone_number;
 
+    private String zip_code;
+
     private String city;
 
     private String street;
