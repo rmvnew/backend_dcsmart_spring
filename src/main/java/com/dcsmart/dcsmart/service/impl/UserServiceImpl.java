@@ -10,6 +10,8 @@ import com.dcsmart.dcsmart.model.Phone;
 import com.dcsmart.dcsmart.model.User;
 import com.dcsmart.dcsmart.repository.*;
 import com.dcsmart.dcsmart.service.UserService;
+import com.dcsmart.dcsmart.utils.CPF;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -49,6 +51,25 @@ public class UserServiceImpl implements UserService {
             throw new UserIsRegisteredException(String.format("Usuário com nome %s já está cadastrado",user.getName()));
         }
 
+        var profile = this.profileRepository.findById(user.getProfile_id())
+                .orElseThrow(() -> new ProfileNotFoundException(
+                        String.format("O perfil com id: %d não existe",user.getProfile_id())
+                ));
+
+        boolean phoneNotExists = this.phoneRepository.phoneExists(user.getPhone_number()).isEmpty();
+
+        if(!phoneNotExists){
+            throw new PhoneAlreadyExistsException(String.format("O telefone %s já está cadastrado",user.getPhone_number()));
+        }
+
+        if(user.getRegister().length() < 11 || user.getRegister().length() > 14){
+            throw new UserSizeRegisterException(String.format("O cpf deve ter entre 11 a 14 caracteres!"));
+        }
+
+        if(!CPF.isCPF(user.getRegister())){
+            throw new UserIsRegisteredException(String.format("O número de cpf é inválido"));
+        }
+
         var currentAddress = new Address();
         currentAddress.setZipCode(user.getZip_code());
         currentAddress.setStreet(user.getStreet());
@@ -58,8 +79,8 @@ public class UserServiceImpl implements UserService {
         currentAddress.setCountry(user.getCountry());
         currentAddress.setAddress_number(user.getAddress_number());
         currentAddress.setIsActive(true);
-        currentAddress.setCreateAt(LocalDateTime.now());
-        currentAddress.setUpdateAt(LocalDateTime.now());
+        currentAddress.setCreateAt(LocalDateTime.now(ZoneOffset.UTC));
+        currentAddress.setUpdateAt(LocalDateTime.now(ZoneOffset.UTC));
 
         Address addressSaved = this.addressRepository.save(currentAddress);
 
@@ -69,8 +90,8 @@ public class UserServiceImpl implements UserService {
         currentClient.setEmail(user.getEmail());
         currentClient.setIsActive(true);
         currentClient.setAddress(addressSaved);
-        currentClient.setCreateAt(LocalDateTime.now());
-        currentClient.setUpdateAt(LocalDateTime.now());
+        currentClient.setCreateAt(LocalDateTime.now(ZoneOffset.UTC));
+        currentClient.setUpdateAt(LocalDateTime.now(ZoneOffset.UTC));
 
         Person personSaved = this.personRepository.save(currentClient);
 
@@ -78,18 +99,21 @@ public class UserServiceImpl implements UserService {
         currentPhone.setPhone_number(user.getPhone_number());
         currentPhone.setIsActive(true);
         currentPhone.setPerson(personSaved);
-        currentPhone.setCreateAt(LocalDateTime.now());
-        currentPhone.setUpdateAt(LocalDateTime.now());
+        currentPhone.setCreateAt(LocalDateTime.now(ZoneOffset.UTC));
+        currentPhone.setUpdateAt(LocalDateTime.now(ZoneOffset.UTC));
         this.phoneRepository.save(currentPhone);
+
+        BCryptPasswordEncoder passwordHash = new BCryptPasswordEncoder();
+        String pass = passwordHash.encode(user.getPassword());
 
 
         var currentUser = new User();
-        currentUser.setPassword(user.getPassword());
+        currentUser.setPassword(pass);
         currentUser.setPerson(personSaved);
-        currentUser.setProfile(this.profileRepository.getById(user.getProfile_id()));
+        currentUser.setProfile(profile);
         currentUser.setIsActive(true);
-        currentUser.setCreateAt(LocalDateTime.now());
-        currentUser.setUpdateAt(LocalDateTime.now());
+        currentUser.setCreateAt(LocalDateTime.now(ZoneOffset.UTC));
+        currentUser.setUpdateAt(LocalDateTime.now(ZoneOffset.UTC));
 
         this.userRepository.save(currentUser);
 
@@ -127,6 +151,12 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponse update(Long id, UserRequest user) {
 
+        boolean isActive = this.userRepository.findInactive(id).isEmpty();
+
+        if(!isActive){
+            throw new UserNotFoundException(String.format("Usuário com id $d não encontrado",id));
+        }
+
         User userRegistered = this.userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException(
                         ErrorsMsg.USER_E.getCode()
@@ -157,34 +187,30 @@ public class UserServiceImpl implements UserService {
         addressRegistered.setCountry(user.getCountry());
         addressRegistered.setAddress_number(user.getAddress_number());
         addressRegistered.setIsActive(true);
-        addressRegistered.setUpdateAt(LocalDateTime.now());
+        addressRegistered.setUpdateAt(LocalDateTime.now(ZoneOffset.UTC));
 
         Address addressSaved = this.addressRepository.save(addressRegistered);
-
 
         personRegistered.setName(user.getName());
         personRegistered.setRegister(user.getRegister());
         personRegistered.setEmail(user.getEmail());
         personRegistered.setIsActive(true);
         personRegistered.setAddress(addressSaved);
-        personRegistered.setUpdateAt(LocalDateTime.now());
+        personRegistered.setUpdateAt(LocalDateTime.now(ZoneOffset.UTC));
 
         Person personSaved = this.personRepository.save(personRegistered);
-
 
         phoneRegistered.setPhone_number(user.getPhone_number());
         phoneRegistered.setIsActive(true);
         phoneRegistered.setPerson(personSaved);
-        phoneRegistered.setUpdateAt(LocalDateTime.now());
+        phoneRegistered.setUpdateAt(LocalDateTime.now(ZoneOffset.UTC));
         this.phoneRepository.save(phoneRegistered);
-
-
 
         userRegistered.setPassword(user.getPassword());
         userRegistered.setPerson(personSaved);
         userRegistered.setProfile(this.profileRepository.getById(user.getProfile_id()));
         userRegistered.setIsActive(true);
-        userRegistered.setUpdateAt(LocalDateTime.now());
+        userRegistered.setUpdateAt(LocalDateTime.now(ZoneOffset.UTC));
 
         this.userRepository.save(userRegistered);
 
@@ -194,20 +220,47 @@ public class UserServiceImpl implements UserService {
     @Override
     public void delete(Long id) {
 
-        User userSaved = this.userRepository.findById(id)
+        User userRegistered = this.userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException(
                         String.format("User com id %d não existe",id)
                 ));
 
+        Person personRegistered = this.personRepository.findById(userRegistered.getPerson().getPersonId())
+                .orElseThrow(() -> new PersonNotFoundException(
+                        String.format("Person com id %d não existe",userRegistered.getPerson().getPersonId())
+                ));
 
-        if(userSaved.getIsActive()){
-            userSaved.setIsActive(false);
+        Address addressRegistered = this.addressRepository.findById(personRegistered.getAddress().getAddressId())
+                .orElseThrow(() -> new AddressNotFoundException(
+                        String.format("Address com id %d não existe",personRegistered.getAddress().getAddressId())
+                ));
+
+        Phone phoneRegistered = this.phoneRepository.findByPerson(personRegistered.getPersonId())
+                .orElseThrow(() -> new PhoneNotFoundException(
+                        String.format("Phone com id %d não existe",personRegistered.getPersonId())
+                ));
+
+
+        if(userRegistered.getIsActive()){
+
+            userRegistered.setIsActive(false);
+            personRegistered.setIsActive(false);
+            phoneRegistered.setIsActive(false);
+            addressRegistered.setIsActive(false);
+
+            userRegistered.setUpdateAt(LocalDateTime.now(ZoneOffset.UTC));
+            personRegistered.setUpdateAt(LocalDateTime.now(ZoneOffset.UTC));
+            phoneRegistered.setUpdateAt(LocalDateTime.now(ZoneOffset.UTC));
+            addressRegistered.setUpdateAt(LocalDateTime.now(ZoneOffset.UTC));
+
         }else{
-            throw new ItemInactiveException(String.format("%s is already inactive",userSaved.getPerson().getName()));
+            throw new ItemInactiveException(String.format("%s is already inactive",userRegistered.getPerson().getName()));
         }
-        userSaved.setUpdateAt(LocalDateTime.now(ZoneOffset.UTC));
 
-        this.userRepository.save(userSaved);
+        
+
+
+        this.userRepository.save(userRegistered);
 
     }
 }

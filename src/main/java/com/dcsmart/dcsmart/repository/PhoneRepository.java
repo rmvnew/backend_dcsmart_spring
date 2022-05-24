@@ -11,8 +11,10 @@ import java.util.Optional;
 public interface PhoneRepository extends JpaRepository<Phone ,Long> {
 
 
-    @Query(value = "SELECT * FROM phone WHERE person_id = :id",nativeQuery = true)
+    @Query(value = "SELECT * FROM phone WHERE person_id = :id and is_active = true",nativeQuery = true)
     Optional<Phone> findByPerson(Long id);
 
 
+    @Query(value = "SELECT * FROM phone WHERE phone_number = :phone_number AND is_active = true",nativeQuery = true)
+    Optional<Phone> phoneExists(String phone_number);
 }
