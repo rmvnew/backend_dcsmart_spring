@@ -3,6 +3,7 @@ package com.dcsmart.dcsmart.service.impl;
 import com.dcsmart.dcsmart.controller.dto.request.UserRequest;
 import com.dcsmart.dcsmart.controller.dto.response.UserResponse;
 import com.dcsmart.dcsmart.enums.ErrorsMsg;
+import com.dcsmart.dcsmart.enums.LengthType;
 import com.dcsmart.dcsmart.exception.*;
 import com.dcsmart.dcsmart.model.Address;
 import com.dcsmart.dcsmart.model.Person;
@@ -62,12 +63,12 @@ public class UserServiceImpl implements UserService {
             throw new PhoneAlreadyExistsException(String.format("O telefone %s já está cadastrado",user.getPhone_number()));
         }
 
-        if(user.getRegister().length() < 11 || user.getRegister().length() > 14){
-            throw new UserSizeRegisterException(String.format("O cpf deve ter entre 11 a 14 caracteres!"));
+        if(user.getRegister().length() < LengthType.CPF_MIN.getValue() || user.getRegister().length() > LengthType.CPF_MIN.getValue()){
+            throw new UserSizeRegisterException("O cpf deve ter entre 11 a 14 caracteres!");
         }
 
         if(!CPF.isCPF(user.getRegister())){
-            throw new UserIsRegisteredException(String.format("O número de cpf é inválido"));
+            throw new UserIsRegisteredException("O número de cpf é inválido");
         }
 
         var currentAddress = new Address();
@@ -130,8 +131,7 @@ public class UserServiceImpl implements UserService {
     public UserResponse findById(Long id) {
         return UserResponse.converter(this.userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException(
-//                        String.format("User com id %d não existe",id)
-                        ErrorsMsg.USER_NF.getCode()
+                        String.format("User com id %d não existe",id)
                                 +" - "+ ErrorsMsg.USER_NF.getMessage()
                 )));
     }
