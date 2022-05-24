@@ -3,6 +3,7 @@ package com.dcsmart.dcsmart.repository;
 import com.dcsmart.dcsmart.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -14,7 +15,7 @@ public interface UserRepository extends JpaRepository<User,Long> {
     @Query(value = "SELECT * FROM tb_user AS U INNER JOIN person AS P ON U.person_id =" +
             " P.person_id INNER JOIN tb_profile AS PP ON U.profile_id = PP.profile_id " +
             "WHERE P.person_name like %:name% and U.is_active = true",nativeQuery = true)
-    Optional<User> findByName(String name);
+    Optional<User> findByName(@Param("name") String name);
 
     Optional<User> findById(Long id);
 
@@ -27,6 +28,6 @@ public interface UserRepository extends JpaRepository<User,Long> {
     @Query(value = "select * from tb_user as U " +
             "inner JOIN person as P on U.person_id = P.person_id " +
             "where P.email = :email",nativeQuery = true)
-    Optional<User> findByEmail(String email);
+    Optional<User> findByEmail(@Param("email") String email);
 
 }
