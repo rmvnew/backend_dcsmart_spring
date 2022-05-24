@@ -3,6 +3,7 @@ package com.dcsmart.dcsmart.repository;
 import com.dcsmart.dcsmart.model.Category;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -15,6 +16,6 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
     List<Category> findAll();
 
     @Query(value = "SELECT * FROM category WHERE category_name like %:name% and is_active = true",nativeQuery = true)
-    Optional<Category> findByName(String name);
+    Optional<Category> findByName(@Param("name") String name);
 
 }
