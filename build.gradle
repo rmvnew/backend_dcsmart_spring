@@ -28,6 +28,8 @@ dependencies {
 	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa', version: '2.6.7'
 	implementation group: 'com.sun.jersey.contribs', name: 'jersey-spring', version: '1.19.4'
 	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-security', version: '2.6.7'
+	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation', version: '2.7.0'
+
 
 
 }

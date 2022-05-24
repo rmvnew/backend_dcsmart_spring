@@ -15,4 +15,6 @@ public interface PhoneRepository extends JpaRepository<Phone ,Long> {
     Optional<Phone> findByPerson(Long id);
 
 
+    @Query(value = "SELECT * FROM phone WHERE phone_number = :phone_number AND is_active = true",nativeQuery = true)
+    Optional<Phone> phoneExists(String phone_number);
 }
