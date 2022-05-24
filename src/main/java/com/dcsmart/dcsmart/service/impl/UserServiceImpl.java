@@ -10,6 +10,7 @@ import com.dcsmart.dcsmart.model.Phone;
 import com.dcsmart.dcsmart.model.User;
 import com.dcsmart.dcsmart.repository.*;
 import com.dcsmart.dcsmart.service.UserService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -49,6 +50,7 @@ public class UserServiceImpl implements UserService {
             throw new UserIsRegisteredException(String.format("Usuário com nome %s já está cadastrado",user.getName()));
         }
 
+
         var currentAddress = new Address();
         currentAddress.setZipCode(user.getZip_code());
         currentAddress.setStreet(user.getStreet());
@@ -82,9 +84,11 @@ public class UserServiceImpl implements UserService {
         currentPhone.setUpdateAt(LocalDateTime.now());
         this.phoneRepository.save(currentPhone);
 
+        BCryptPasswordEncoder passwordHash = new BCryptPasswordEncoder();
+        String pass = passwordHash.encode(user.getPassword());
 
         var currentUser = new User();
-        currentUser.setPassword(user.getPassword());
+        currentUser.setPassword(pass);
         currentUser.setPerson(personSaved);
         currentUser.setProfile(this.profileRepository.getById(user.getProfile_id()));
         currentUser.setIsActive(true);
@@ -167,7 +171,6 @@ public class UserServiceImpl implements UserService {
 
         Address addressSaved = this.addressRepository.save(addressRegistered);
 
-
         personRegistered.setName(user.getName());
         personRegistered.setRegister(user.getRegister());
         personRegistered.setEmail(user.getEmail());
@@ -177,14 +180,11 @@ public class UserServiceImpl implements UserService {
 
         Person personSaved = this.personRepository.save(personRegistered);
 
-
         phoneRegistered.setPhone_number(user.getPhone_number());
         phoneRegistered.setIsActive(true);
         phoneRegistered.setPerson(personSaved);
         phoneRegistered.setUpdateAt(LocalDateTime.now());
         this.phoneRepository.save(phoneRegistered);
-
-
 
         userRegistered.setPassword(user.getPassword());
         userRegistered.setPerson(personSaved);
@@ -205,9 +205,10 @@ public class UserServiceImpl implements UserService {
                         String.format("User com id %d não existe",id)
                 ));
 
-
         if(userSaved.getIsActive()){
+
             userSaved.setIsActive(false);
+
         }else{
             throw new ItemInactiveException(String.format("%s is already inactive",userSaved.getPerson().getName()));
         }

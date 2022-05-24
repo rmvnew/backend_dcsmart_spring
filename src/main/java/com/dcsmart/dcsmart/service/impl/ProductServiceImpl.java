@@ -34,7 +34,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public void save(ProductRequest productRequest) {
 
-        Category CategoryRegistered = this.categoryRepository.findById(productRequest.getCategory_id())
+        Category categoryRegistered = this.categoryRepository.findById(productRequest.getCategory_id())
                 .orElseThrow(() -> new CategoryNotFoundException(
                         String.format("Categoria com id %d não foi encontrada",productRequest.getCategory_id())
                 ));
@@ -44,7 +44,7 @@ public class ProductServiceImpl implements ProductService {
         product.setProduct_name(productRequest.getProduct_name());
         product.setProduct_description(productRequest.getProduct_description());
         product.setBarcode(productRequest.getBarcode());
-        product.setCategory(CategoryRegistered);
+        product.setCategory(categoryRegistered);
         product.setPrice(productRequest.getPrice());
         product.setQuantity(productRequest.getQuantity());
         product.setDiscount(productRequest.getDiscount());
