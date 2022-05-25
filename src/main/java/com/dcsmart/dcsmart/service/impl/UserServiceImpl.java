@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 @Service
@@ -29,6 +30,7 @@ public class UserServiceImpl implements UserService {
     private final AddressRepository addressRepository;
     private final UserRepository userRepository;
     private final ProfileRepository profileRepository;
+    BCryptPasswordEncoder passwordHash = new BCryptPasswordEncoder();
 
     public UserServiceImpl(
             PersonRepository personRepository,
@@ -45,11 +47,12 @@ public class UserServiceImpl implements UserService {
     @Override
     public void save(UserRequest user) {
 
+        String currentName = user.getName().toUpperCase(Locale.ROOT);
         var userRegistered = this.userRepository.findByName(user.getName())
                 .isPresent();
 
         if(userRegistered){
-            throw new UserIsRegisteredException(String.format("Usuário com nome %s já está cadastrado",user.getName()));
+            throw new UserIsRegisteredException(String.format("Usuário com nome %s já está cadastrado",currentName));
         }
 
         var profile = this.profileRepository.findById(user.getProfile_id())
@@ -86,7 +89,7 @@ public class UserServiceImpl implements UserService {
         Address addressSaved = this.addressRepository.save(currentAddress);
 
         var currentClient = new Person();
-        currentClient.setName(user.getName());
+        currentClient.setName(currentName);
         currentClient.setRegister(user.getRegister());
         currentClient.setEmail(user.getEmail());
         currentClient.setIsActive(true);
@@ -104,9 +107,8 @@ public class UserServiceImpl implements UserService {
         currentPhone.setUpdateAt(LocalDateTime.now(ZoneOffset.UTC));
         this.phoneRepository.save(currentPhone);
 
-        BCryptPasswordEncoder passwordHash = new BCryptPasswordEncoder();
-        String pass = passwordHash.encode(user.getPassword());
 
+        String pass = passwordHash.encode(user.getPassword());
 
         var currentUser = new User();
         currentUser.setPassword(pass);
@@ -152,6 +154,7 @@ public class UserServiceImpl implements UserService {
     public UserResponse update(Long id, UserRequest user) {
 
         boolean isActive = this.userRepository.findInactive(id).isEmpty();
+        String currentName = user.getName().toUpperCase(Locale.ROOT);
 
         if(!isActive){
             throw new UserNotFoundException(String.format("Usuário com id $d não encontrado",id));
@@ -159,8 +162,8 @@ public class UserServiceImpl implements UserService {
 
         User userRegistered = this.userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException(
-                        ErrorsMsg.USER_E.getCode()
-                                +" - "+ ErrorsMsg.USER_E.getMessage()
+                        ErrorsMsg.USER_NF.getCode()
+                                +" - "+ ErrorsMsg.USER_NF.getMessage()
                 ));
 
         Person personRegistered = this.personRepository.findById(userRegistered.getPerson().getPersonId())
@@ -178,6 +181,19 @@ public class UserServiceImpl implements UserService {
                         String.format("Phone com id %d não existe",personRegistered.getPersonId())
                 ));
 
+        if(user.getRegister().length() < LengthType.CPF_MIN.getValue() || user.getRegister().length() > LengthType.CPF_MIN.getValue()){
+            throw new UserSizeRegisterException("O cpf deve ter entre 11 a 14 caracteres!");
+        }
+
+        if(!CPF.isCPF(user.getRegister())){
+            throw new UserIsRegisteredException("O número de cpf é inválido");
+        }
+
+        boolean phoneNotExists = this.phoneRepository.phoneExistsInOtherAcount(user.getPhone_number(),phoneRegistered.getPhoneId()).isEmpty();
+
+        if(!phoneNotExists){
+            throw new PhoneAlreadyExistsException(String.format("O telefone %s já está cadastrado",user.getPhone_number()));
+        }
 
         addressRegistered.setZipCode(user.getZip_code());
         addressRegistered.setStreet(user.getStreet());
@@ -191,7 +207,7 @@ public class UserServiceImpl implements UserService {
 
         Address addressSaved = this.addressRepository.save(addressRegistered);
 
-        personRegistered.setName(user.getName());
+        personRegistered.setName(currentName);
         personRegistered.setRegister(user.getRegister());
         personRegistered.setEmail(user.getEmail());
         personRegistered.setIsActive(true);
@@ -206,7 +222,9 @@ public class UserServiceImpl implements UserService {
         phoneRegistered.setUpdateAt(LocalDateTime.now(ZoneOffset.UTC));
         this.phoneRepository.save(phoneRegistered);
 
-        userRegistered.setPassword(user.getPassword());
+        String pass = passwordHash.encode(user.getPassword());
+
+        userRegistered.setPassword(pass);
         userRegistered.setPerson(personSaved);
         userRegistered.setProfile(this.profileRepository.getById(user.getProfile_id()));
         userRegistered.setIsActive(true);

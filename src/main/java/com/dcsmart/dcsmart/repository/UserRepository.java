@@ -17,13 +17,13 @@ public interface UserRepository extends JpaRepository<User,Long> {
             "WHERE P.person_name like %:name% and U.is_active = true",nativeQuery = true)
     Optional<User> findByName(@Param("name") String name);
 
-    Optional<User> findById(Long id);
+    Optional<User> findById(@Param("id") Long id);
 
     @Query(value = "SELECT * FROM tb_user WHERE is_active = true",nativeQuery = true)
     List<User> findAllActives();
 
     @Query(value = "select is_active from tb_user where is_active = false",nativeQuery = true)
-    Optional<Boolean> findInactive(Long id);
+    Optional<Boolean> findInactive(@Param("id") Long id);
 
     @Query(value = "select * from tb_user as U " +
             "inner JOIN person as P on U.person_id = P.person_id " +
